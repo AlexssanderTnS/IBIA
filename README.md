@@ -1,9 +1,9 @@
-*IBIA – Inteligência Baseada em Inovação Acadêmica
+# IBIA – Inteligência Baseada em Inovação Acadêmica
 
 A IBIA é a tutora digital do IBAP-RJ (Instituto Brasileiro de Administração Pública do Rio de Janeiro), desenvolvida para oferecer suporte educacional e acadêmico dentro da plataforma de cursos da instituição.
 Seu propósito é aproximar tecnologia e aprendizado, tornando a experiência educacional mais eficiente, acessível e orientada ao aluno.
 
-Missão
+# Missão
 
 Promover uma educação moderna e humanizada, utilizando a tecnologia como ferramenta para apoiar alunos e professores no processo de aprendizagem e desenvolvimento contínuo.
 
