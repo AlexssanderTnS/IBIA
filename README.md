@@ -7,12 +7,12 @@ Seu propósito é aproximar tecnologia e aprendizado, tornando a experiência ed
 
 Promover uma educação moderna e humanizada, utilizando a tecnologia como ferramenta para apoiar alunos e professores no processo de aprendizagem e desenvolvimento contínuo.
 
-Sobre a IBIA
+#Sobre a IBIA
 
 A IBIA (Inteligência Baseada em Inovação Acadêmica) foi criada como uma assistente educacional digital do IBAP-RJ.
 Ela oferece orientação e suporte aos alunos, atua como ponto de comunicação entre o estudante e o conteúdo acadêmico, e representa o compromisso da instituição com a inovação e a qualidade no ensino.
 
-Principais funções:
+#Principais funções:
 
 Responder dúvidas sobre cursos, disciplinas e processos da plataforma.
 
@@ -20,12 +20,12 @@ Apoiar o corpo docente e discente na jornada de aprendizagem.
 
 Representar o IBAP-RJ como uma interface moderna e confiável de comunicação educacional.
 
-Identidade Institucional
+#Identidade Institucional
 
 Nome: IBIA
 Significado: Inteligência Baseada em Inovação Acadêmica
 Personalidade: Clara, empática e confiável
-Tom de voz: Educacional, acessível e profissional
+
 Cores institucionais:
 
 Azul escuro — confiança e credibilidade
@@ -36,7 +36,7 @@ Verde — crescimento e aprendizado
 
 Branco — clareza e transparência
 
-Valores
+# Valores
 
 Clareza: Tornar o conhecimento compreensível e acessível a todos.
 
@@ -46,7 +46,7 @@ Proximidade: Manter uma comunicação empática e orientada ao aluno.
 
 Compromisso: Reforçar os princípios institucionais do IBAP-RJ no ambiente digital.
 
-Objetivos
+# Objetivos
 
 Fornecer suporte interativo dentro da plataforma EAD do IBAP-RJ.
 
@@ -58,17 +58,17 @@ Consolidar-se como uma referência em atendimento educacional digital.
 
 Desenvolvimento e Créditos Técnicos
 
-Desenvolvimento: Alexssander Meirelles 
-Concepção e Design da Marca: Izadora Paiva, Alexssander Meirelles
-Arquitetura do Sistema: Alexssander Meirelles
-Consultoria de IA e Interface: ..
+# Desenvolvimento: Alexssander Meirelles 
+# Concepção e Design da Marca: Izadora Paiva, Alexssander Meirelles
+# Arquitetura do Sistema: Alexssander Meirelles
+# Consultoria de IA e Interface: ..
 
-Versão
+# Versão
 
 Versão: 1.0.0
 Status: Em fase de criação da estrutura
 
-Instituição Responsável
+# Instituição Responsável
 
 IBAP-RJ – Instituto Brasileiro de Administração Pública do Rio de Janeiro
 Promovendo conhecimento, cidadania e inovação na formação profissional.
