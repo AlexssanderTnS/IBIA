@@ -21,8 +21,8 @@ def carregar_documentos():
 
 def dividir_chunks(documentos):
     separador_documentos = RecursiveCharacterTextSplitter(
-        chunk_size=3000,
-        chunk_overlap=200,
+        chunk_size=800,      # antes 3000
+        chunk_overlap=200,   # mantém um pouco de contexto
         length_function=len,
     )
     chunks = separador_documentos.split_documents(documentos)
@@ -31,10 +31,11 @@ def dividir_chunks(documentos):
 
 def vetorizar_chunks(chunks):
     embeddings = HuggingFaceEmbeddings(
-        model_name="BAAI/bge-m3",
-        model_kwargs={"device": "cpu"},          
-        encode_kwargs={"normalize_embeddings": True}
-    )
+    model_name="BAAI/bge-small-en-v1.5",
+    model_kwargs={"device": "cpu"},
+    encode_kwargs={"normalize_embeddings": True},
+)
+
 
     db = Chroma.from_documents(
         chunks,
