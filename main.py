@@ -1,5 +1,5 @@
 import streamlit as st
-from langchain_chroma.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 # Carregar embeddings (mesmo modelo usado no db.py)
