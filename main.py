@@ -1,8 +1,7 @@
 import streamlit as st
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.chat_models import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
 
 
 embeddings = HuggingFaceEmbeddings(
@@ -11,84 +10,105 @@ embeddings = HuggingFaceEmbeddings(
     encode_kwargs={"normalize_embeddings": True},
 )
 
-
 db = Chroma(persist_directory="DB", embedding_function=embeddings)
 
-# LLM do Ollama
-llm = ChatOllama(
-    model="phi3:mini",   
-    temperature=0.2,
-    options={"num_ctx": 4096}
-)
 
-prompt = ChatPromptTemplate.from_template(
-    """
-Você é uma instrutora de trânsito chamada IBIA, especializada em CNH e dicas de como tirar a primeira habilitação.
-Responda SEMPRE em português claro, didático e objetivo. sempre fale me português do Brasil.
 
-Use APENAS as informações do CONTEXTO abaixo.
-Se o contexto não trouxer a resposta, diga que o material não é suficiente
-e sugira que o aluno procure o instrutor.
+def gerar_resposta_ibIA(pergunta: str, contexto: str) -> str:
+    llm = ChatOllama(
+        model="phi3:mini", 
+        temperature=0.2,
+    )
 
----------------- CONTEXTO ----------------
-{context}
------------------------------------------
+    prompt = f"""
+Você é a IBIA — Inteligência Baseada em Instrução Automotiva.
 
-PERGUNTA DO ALUNO:
-{question}
+É uma instrutora virtual de trânsito, especialista em CNH, legislação, direção defensiva
+e educação para o trânsito.
 
-RESPOSTA completa em linguagem simples(sempre em pt-br):
+Regras:
+- Responda SEMPRE em português do Brasil.
+- Seja clara, simples, amigável e profissional.
+- Use APENAS o CONTEXTO fornecido abaixo para responder.
+- Se o contexto não trouxer a resposta, diga claramente que o material não é suficiente
+  e recomende procurar um instrutor ou material complementar.
+- Explique em linguagem acessível, como se estivesse conversando com um aluno.
+
+------------------- CONTEXTO -------------------
+{contexto}
+------------------------------------------------
+
+Pergunta do aluno:
+{pergunta}
+
+Resposta da IBIA:
 """
-)
 
-st.title("Assistente IBIA - Perguntas sobre CNH")
+    resultado = llm.invoke(prompt)
+    return getattr(resultado, "content", str(resultado))
 
-pergunta = st.text_input("Digite sua pergunta:")
 
-if st.button("Perguntar"):
-    if pergunta.strip() == "":
-        st.warning("Digite algo.")
+
+st.set_page_config(page_title="IBIA - Assistente CNH", page_icon="🚗")
+
+st.title("IBIA - Assistente Virtual de CNH")
+
+
+if "mensagens" not in st.session_state:
+    st.session_state["mensagens"] = [
+        {
+            "role": "assistant",
+            "content": (
+                "Olá! Eu sou a **IBIA**, sua assistente virtual de educação para o trânsito. "
+                "Posso te ajudar com dúvidas sobre CNH, leis de trânsito, direção defensiva "
+                "e conteúdos da sua apostila. O que você gostaria de saber hoje?"
+            ),
+        }
+    ]
+
+for msg in st.session_state["mensagens"]:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+
+pergunta = st.chat_input("Digite sua dúvida sobre CNH:")
+
+if pergunta:
+
+    st.session_state["mensagens"].append(
+        {"role": "user", "content": pergunta}
+    )
+
+
+    with st.chat_message("user"):
+        st.markdown(pergunta)
+
+
+    resultados = db.similarity_search_with_score(pergunta, k=6)
+    limite_score = 0.55
+    relevantes = [(doc, score) for doc, score in resultados if score <= limite_score]
+
+    if not relevantes:
+        resposta = (
+            "Não encontrei informações suficientes nos materiais carregados para responder "
+            "com segurança à sua pergunta. Recomendo consultar seu instrutor ou material "
+            "complementar da autoescola."
+        )
     else:
-      
-        resultados = db.similarity_search_with_score(pergunta, k=8)
+        partes_contexto = [doc.page_content for doc, score in relevantes]
+        contexto = "\n\n".join(partes_contexto)
 
-       
-        limite_score = 0.55  
 
-        relevantes = [(doc, score) for doc, score in resultados if score <= limite_score]
+        with st.chat_message("assistant"):
+            with st.spinner("IBIA está pensando..."):
+                try:
+                    resposta = gerar_resposta_ibIA(pergunta, contexto)
+                    st.markdown(resposta)
+                except Exception as e:
+                    resposta = f"Erro ao gerar resposta com o modelo local: `{e}`"
+                    st.error(resposta)
 
-        st.subheader("Trechos mais relevantes:")
-
-        if not relevantes:
-            st.write("Nenhum trecho com relevância suficiente foi encontrado.")
-            contexto = ""  #
-        else:
-            partes_contexto = []
-            for i, (doc, score) in enumerate(relevantes, start=1):
-                st.markdown(f"**Trecho {i}** (score: `{score:.3f}`)")
-                st.write(doc.page_content)        
-               
-                st.markdown("---")
-                partes_contexto.append(doc.page_content)
-
-            
-            contexto = "\n\n".join(partes_contexto)
-
-        st.subheader("Resposta:")
-
-        if not contexto:
-            st.write(
-                "Não encontrei trechos suficientes no material para responder com segurança "
-                "sobre esse assunto."
-            )
-        else:
-            
-            chain = prompt | llm
-            resposta = chain.invoke(
-                {
-                    "context": contexto,
-                    "question": pergunta,
-                }
-            ).content
-
-            st.write(resposta)
+    
+    st.session_state["mensagens"].append(
+        {"role": "assistant", "content": resposta}
+    )
