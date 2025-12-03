@@ -1,7 +1,11 @@
+import os
 import streamlit as st
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_ollama import ChatOllama
+from groq import Groq  
+from dotenv import load_dotenv
+
+
 
 
 embeddings = HuggingFaceEmbeddings(
@@ -12,15 +16,19 @@ embeddings = HuggingFaceEmbeddings(
 
 db = Chroma(persist_directory="DB", embedding_function=embeddings)
 
+load_dotenv()
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")  
+client = Groq(api_key=GROQ_API_KEY)
 
 
 def gerar_resposta_ibIA(pergunta: str, contexto: str) -> str:
-    llm = ChatOllama(
-        model="phi3:mini", 
-        temperature=0.2,
-    )
+    """
+    Gera resposta usando DeepSeek (via Groq) em vez de Ollama.
+    """
 
-    prompt = f"""
+    # Mensagem de sistema com o "perfil" da IBIA
+    system_msg = """
 Você é a IBIA — Inteligência Baseada em Instrução Automotiva.
 
 É uma instrutora virtual de trânsito, especialista em CNH, legislação, direção defensiva
@@ -33,7 +41,9 @@ Regras:
 - Se o contexto não trouxer a resposta, diga claramente que o material não é suficiente
   e recomende procurar um instrutor ou material complementar.
 - Explique em linguagem acessível, como se estivesse conversando com um aluno.
+"""
 
+    user_msg = f"""
 ------------------- CONTEXTO -------------------
 {contexto}
 ------------------------------------------------
@@ -41,18 +51,27 @@ Regras:
 Pergunta do aluno:
 {pergunta}
 
-Resposta da IBIA:
+Responda como IBIA:
 """
 
-    resultado = llm.invoke(prompt)
-    return getattr(resultado, "content", str(resultado))
+    response = client.chat.completions.create(
+        model="groq/compound",  # modelo da DeepSeek hospedado no Groq
+        messages=[
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": user_msg},
+        ],
+        temperature=0.2,
+        max_tokens=8192,
+    )
+
+    return response.choices[0].message.content.strip()
+
 
 
 
 st.set_page_config(page_title="IBIA - Assistente CNH", page_icon="🚗")
 
 st.title("IBIA - Assistente Virtual de CNH")
-
 
 if "mensagens" not in st.session_state:
     st.session_state["mensagens"] = [
@@ -66,14 +85,13 @@ if "mensagens" not in st.session_state:
         }
     ]
 
-# Renderizar mensagens do histórico
+
 for msg in st.session_state["mensagens"]:
     avatar = "assets/IBIA.png" if msg["role"] == "assistant" else "👤"
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 
 
-# Quando o usuário envia uma pergunta
 pergunta = st.chat_input("Digite sua dúvida sobre CNH:")
 
 if pergunta:
@@ -90,7 +108,7 @@ if pergunta:
 
     if not relevantes:
         resposta = (
-            "Não encontrei informações suficientes nos materiais carregados..."
+            "Não encontrei informações suficientes nos materiais carregados."
         )
     else:
         partes_contexto = [doc.page_content for doc, score in relevantes]
