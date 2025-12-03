@@ -7,9 +7,8 @@ langchain-text-splitters
 langchain-chroma
 langchain-huggingface
 langchain-core 
-langchain_ollama
-phi3:mini
+groq
 sentence-transformers
 torch
-
+dotenv
 pypdf
