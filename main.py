@@ -66,23 +66,23 @@ if "mensagens" not in st.session_state:
         }
     ]
 
+# Renderizar mensagens do histórico
 for msg in st.session_state["mensagens"]:
-    with st.chat_message(msg["role"]):
+    avatar = "assets/IBIA.png" if msg["role"] == "assistant" else "👤"
+    with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 
 
+# Quando o usuário envia uma pergunta
 pergunta = st.chat_input("Digite sua dúvida sobre CNH:")
 
 if pergunta:
-
     st.session_state["mensagens"].append(
         {"role": "user", "content": pergunta}
     )
 
-
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar="👤"):
         st.markdown(pergunta)
-
 
     resultados = db.similarity_search_with_score(pergunta, k=6)
     limite_score = 0.55
@@ -90,25 +90,21 @@ if pergunta:
 
     if not relevantes:
         resposta = (
-            "Não encontrei informações suficientes nos materiais carregados para responder "
-            "com segurança à sua pergunta. Recomendo consultar seu instrutor ou material "
-            "complementar da autoescola."
+            "Não encontrei informações suficientes nos materiais carregados..."
         )
     else:
         partes_contexto = [doc.page_content for doc, score in relevantes]
         contexto = "\n\n".join(partes_contexto)
 
-
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant", avatar="assets/IBIA.png"):
             with st.spinner("IBIA está pensando..."):
                 try:
                     resposta = gerar_resposta_ibIA(pergunta, contexto)
                     st.markdown(resposta)
                 except Exception as e:
-                    resposta = f"Erro ao gerar resposta com o modelo local: `{e}`"
+                    resposta = f"Erro: `{e}`"
                     st.error(resposta)
 
-    
     st.session_state["mensagens"].append(
         {"role": "assistant", "content": resposta}
     )
