@@ -15,7 +15,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=GROQ_API_KEY)
 
 
-FEEDBACK_EMAIL_ENDPOINT = "https://formsubmit.co/alexssander.meirelles@gmail.com?noCaptcha=true"
+FEEDBACK_EMAIL_ENDPOINT = "https://formsubmit.co/alexssander.amat@gmail.com?noCaptcha=true"
 
 embeddings = HuggingFaceEmbeddings(
     model_name="BAAI/bge-small-en-v1.5",
