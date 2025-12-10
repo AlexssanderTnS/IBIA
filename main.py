@@ -10,6 +10,7 @@ load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=GROQ_API_KEY)
 
+
 embeddings = HuggingFaceEmbeddings(
     model_name="BAAI/bge-small-en-v1.5", #o score foi adaptado para 0.55 exatamente para esse modelo de embeddings
     model_kwargs={"device": "cpu"},
