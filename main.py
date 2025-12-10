@@ -1,7 +1,3 @@
-import csv
-import requests
-import json
-from datetime import datetime
 import os
 import streamlit as st
 from langchain_chroma import Chroma
@@ -14,11 +10,8 @@ load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=GROQ_API_KEY)
 
-
-FEEDBACK_EMAIL_ENDPOINT = "https://formsubmit.co/alexssander.meirelles@gmail.com?noCaptcha=true"
-
 embeddings = HuggingFaceEmbeddings(
-    model_name="BAAI/bge-small-en-v1.5",
+    model_name="BAAI/bge-small-en-v1.5", #o score foi adaptado para 0.55 exatamente para esse modelo de embeddings
     model_kwargs={"device": "cpu"},
     encode_kwargs={"normalize_embeddings": True},
 )
@@ -26,7 +19,7 @@ embeddings = HuggingFaceEmbeddings(
 db = Chroma(persist_directory="DB", embedding_function=embeddings)
 
 
-def gerar_resposta_ibIA(pergunta: str, contexto: str, historico) -> str:
+def stream_resposta_ibIA(pergunta: str, contexto: str, historico):
     system_msg = """
 Você é a IBIA — Inteligência Baseada em Instrução Automotiva.
 
@@ -65,14 +58,18 @@ Responda como IBIA:
 
     mensagens.append({"role": "user", "content": user_msg})
 
-    response = client.chat.completions.create(
-        model="groq/compound",
+    resposta_stream = client.chat.completions.create(
+        model="groq/compound",  # troque aqui pelo modelo que você quiser usar
         messages=mensagens,
         temperature=0.5,
         max_tokens=800,
+        stream=True,
     )
 
-    return response.choices[0].message.content.strip()
+    for chunk in resposta_stream:
+        parte = getattr(chunk.choices[0].delta, "content", None)
+        if parte:
+            yield parte
 
 
 st.set_page_config(page_title="IBIA - Assistente CNH", page_icon="🚗")
@@ -90,9 +87,6 @@ if "mensagens" not in st.session_state:
             ),
         }
     ]
-
-if "feedback_enviado" not in st.session_state:
-    st.session_state["feedback_enviado"] = False
 
 for msg in st.session_state["mensagens"]:
     avatar = "assets/IBIA.png" if msg["role"] == "assistant" else "👤"
@@ -114,109 +108,30 @@ if pergunta:
     relevantes = [(doc, score) for doc, score in resultados if score <= limite_score]
 
     if not relevantes:
-        with st.chat_message("assistant", avatar="assets/IBIA.png"):
-            with st.spinner("IBIA está pensando..."):
-                try:
-                    resposta = gerar_resposta_ibIA(
-                        pergunta,
-                        "",
-                        st.session_state["mensagens"],
-                    )
-                    st.markdown(resposta)
-                except Exception as e:
-                    resposta = f"Erro: `{e}`"
-                    st.error(resposta)
+        contexto = ""
     else:
         partes_contexto = [doc.page_content for doc, score in relevantes]
         contexto = "\n\n".join(partes_contexto)
 
-        with st.chat_message("assistant", avatar="assets/IBIA.png"):
-            with st.spinner("IBIA está pensando..."):
-                try:
-                    resposta = gerar_resposta_ibIA(
-                        pergunta,
-                        contexto,
-                        st.session_state["mensagens"],
-                    )
-                    st.markdown(resposta)
-                except Exception as e:
-                    resposta = f"Erro: `{e}`"
-                    st.error(resposta)
+    with st.chat_message("assistant", avatar="assets/IBIA.png"):
+        with st.spinner("IBIA está pensando..."):
+            try:
+                placeholder = st.empty()
+                resposta_completa = ""
+
+                for parte in stream_resposta_ibIA(
+                    pergunta,
+                    contexto,
+                    st.session_state["mensagens"],
+                ):
+                    resposta_completa += parte
+                    placeholder.markdown(resposta_completa)
+
+                resposta = resposta_completa
+            except Exception as e:
+                resposta = f"Erro: `{e}`"
+                st.error(resposta)
 
     st.session_state["mensagens"].append(
         {"role": "assistant", "content": resposta}
     )
-
-st.markdown("---")
-st.subheader("Feedback sobre a IBIA")
-
-if not st.session_state["feedback_enviado"]:
-    with st.form("feedback_form"):
-        nota = st.radio(
-            "Como foi sua experiência com a IBIA hoje?",
-            options=[1, 2, 3, 4, 5],
-            format_func=lambda x: f"{x}",
-            horizontal=True,
-        )
-        
-        comentario = st.text_area(
-            "Quer deixar um comentário opcional?",
-            placeholder="Conte no que podemos melhorar ou como a IBIA te ajudou hoje.",
-        )
-
-        enviar = st.form_submit_button("Enviar feedback")
-
-    if enviar:
-        linha = [
-            datetime.now().isoformat(),
-            nota,
-            comentario,
-        ]
-        
-        arquivo_csv = "feedback_ibia.csv"
-        arquivo_existe = os.path.exists(arquivo_csv)
-        
-        with open(arquivo_csv, "a", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            if not arquivo_existe:
-                writer.writerow(["timestamp", "nota", "comentario"])
-            writer.writerow(linha)
-            
-        historico_arquivo = "historico_conversa.json"
-        dados = {
-            "timestamp": datetime.now().isoformat(),
-            "mensagens": st.session_state["mensagens"],
-            "nota": nota,
-            "comentario": comentario,
-        }
-        
-        if os.path.exists(historico_arquivo):
-            with open(historico_arquivo, "r", encoding="utf-8") as f:
-                try:
-                    existente = json.load(f)
-                except json.JSONDecodeError:
-                    existente = []
-        else:
-            existente = []
-            
-        existente.append(dados)
-        
-        with open(historico_arquivo, "w", encoding="utf-8") as f:
-            json.dump(existente, f, ensure_ascii=False, indent=2)
-
-        try:
-            requests.post(
-                FEEDBACK_EMAIL_ENDPOINT,
-                data={
-                    "nota": nota,
-                    "comentario": comentario,
-                },
-                timeout=10,
-            )
-        except Exception as e:
-            st.warning("Seu feedback foi salvo, mas não consegui enviar o e-mail agora.")
-
-        st.session_state["feedback_enviado"] = True
-        st.success("Obrigado, seu feedback foi registrado com sucesso!")
-else:
-    st.info("Obrigado! Seu feedback foi registrado com sucesso.")
