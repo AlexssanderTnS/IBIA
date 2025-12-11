@@ -12,7 +12,7 @@ client = Groq(api_key=GROQ_API_KEY)
 
 
 embeddings = HuggingFaceEmbeddings(
-    model_name="PORTULAN/serafim-900m-portuguese-pt-sentence-encoder-ir", #o score foi adaptado para 0.55 exatamente para esse modelo de embeddings
+    model_name="BAAI/bge-small-en-v1.5", #o score foi adaptado para 0.55 exatamente para esse modelo de embeddings
     model_kwargs={"device": "cpu"},
     encode_kwargs={"normalize_embeddings": True},
 )
@@ -125,9 +125,6 @@ if pergunta:
         st.markdown(pergunta)
 
     resultados = db.similarity_search_with_score(pergunta, k=6)
-    for doc, score in resultados:
-            print(f"Score para resultado:{score}")
-    
     limite_score = 0.55
     relevantes = [(doc, score) for doc, score in resultados if score <= limite_score]
 
