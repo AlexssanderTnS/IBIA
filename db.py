@@ -31,7 +31,7 @@ def dividir_chunks(documentos):
 
 def vetorizar_chunks(chunks):
     embeddings = HuggingFaceEmbeddings(
-    model_name="BAAI/bge-small-en-v1.5",
+    model_name="PORTULAN/serafim-900m-portuguese-pt-sentence-encoder-ir",
     model_kwargs={"device": "cpu"},
     encode_kwargs={"normalize_embeddings": True},
 )
