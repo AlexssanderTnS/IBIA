@@ -125,6 +125,8 @@ if pergunta:
         st.markdown(pergunta)
 
     resultados = db.similarity_search_with_score(pergunta, k=6)
+    for doc, score in resultados:
+            print(f"Score para resultado:{score}")
     
     limite_score = 0.55
     relevantes = [(doc, score) for doc, score in resultados if score <= limite_score]
