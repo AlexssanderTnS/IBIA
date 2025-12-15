@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBIA Chat</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="app">
+        <header class="topbar">
+            <div class="title">IBIA</div>
+            <div class="subtitle">Sua Assistente Virtual de CNH</div>
+        </header>
+
+        <main id="messages" class="messages"></main>
+
+        <form id="chatForm" class="composer">
+            <input id="text" type="text" placeholder="Digite sua dúvida sobre CNH..."  autocomplete="off"/>
+            <button id="send" type="submit">Enviar</button>
+        </form>
+    </div>
+
+    <script src="./app.js"></script>
+    
+</body>
+</html>

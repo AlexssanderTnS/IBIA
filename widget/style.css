@@ -1,0 +1,89 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+  background: #0b1220;
+  color: #e7eefc;
+}
+
+.app {
+  max-width: 780px;
+  margin: 24px auto;
+  background: #111a2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.topbar {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0f1830;
+}
+.title {
+  font-weight: 700;
+  font-size: 18px;
+}
+.subtitle {
+  opacity: 0.8;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.messages {
+  padding: 16px;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bubble {
+  padding: 10px 12px;
+  border-radius: 12px;
+  max-width: 80%;
+  white-space: pre-wrap;
+  line-height: 1.35;
+}
+
+.user {
+  align-self: flex-end;
+  background: #1a73e8;
+  color: #fff;
+}
+
+.assistant {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e7eefc;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0f1830;
+}
+
+.composer input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0b1220;
+  color: #e7eefc;
+  outline: none;
+}
+
+.composer button {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 10px;
+    background: #22c55e;
+    color: #06110a;
+    font-weight: 700;
+    cursor: pointer;
+}
