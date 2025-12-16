@@ -22,7 +22,9 @@ embeddings = HuggingFaceEmbeddings(
 )
 
 
-db = Chroma(persist_directory="DB", embedding_function=embeddings)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_DIR = os.path.join(BASE_DIR, "DB")
+db = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
 
 
 SYSTEM_MSG = """
@@ -122,3 +124,36 @@ Responda como IBIA:
     )
 
     return response.choices[0].message.content.strip()
+
+def stream_resposta_ibIA(pergunta: str, historico: list, contexto: str = ""):
+    mensagens = [{"role": "system", "content": SYSTEM_MSG}]
+
+    for msg in historico[-6:]:
+        if msg["role"] in ("user", "assistant"):
+            mensagens.append({"role": msg["role"], "content": msg["content"]})
+
+    user_msg = f"""
+------------------- CONTEXTO -------------------
+{contexto}
+------------------------------------------------
+
+Pergunta do aluno:
+{pergunta}
+
+Responda como IBIA:
+"""
+    mensagens.append({"role": "user", "content": user_msg})
+
+    resposta_stream = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=mensagens,
+        temperature=0.5,
+        max_tokens=800,
+        stream=True,
+    )
+
+    for chunk in resposta_stream:
+        parte = getattr(chunk.choices[0].delta, "content", None)
+        if parte:
+            yield parte
+

@@ -8,6 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let history = [];
 
+  function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
   function addBubble(role, text) {
     const div = document.createElement("div");
     div.className = `bubble ${role === "user" ? "user" : "assistant"}`;
@@ -62,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const chunk = decoder.decode(value, { stream: true });
         reply += chunk;
+        await sleep(50);
         assistantBubble.textContent += chunk;
         messagesEl.scrollTop = messagesEl.scrollHeight;
       }
@@ -74,4 +79,22 @@ document.addEventListener("DOMContentLoaded", () => {
       sendBtn.disabled = false;
     }
   });
+});
+
+const fab = document.getElementById("ibiaFab");
+const widget = document.getElementById("ibiaWidget");
+
+  function toggleWidget() {
+  const open = widget.classList.toggle("is-open");
+  fab.classList.toggle("is-open", open);
+  widget.setAttribute("aria-hidden", open ? "false" : "true");
+  if (open) input.focus();
+}
+
+fab.addEventListener("click", toggleWidget);
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && widget.classList.contains("is-open")) {
+    toggleWidget();
+  }
 });

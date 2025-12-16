@@ -7,18 +7,24 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div class="app">
-        <header class="topbar">
-            <div class="title">IBIA</div>
-            <div class="subtitle">Sua Assistente Virtual de CNH</div>
-        </header>
 
-        <main id="messages" class="messages"></main>
+    <button id="ibiaFab" class="ibia-fab" type="button" aria-label="Abrir chat IBIA">
+        <img src="../assets/IBIA.png" alt="Abrir chat IBIA" class="ibia-fab-icon" />
+    </button>
 
-        <form id="chatForm" class="composer">
-            <input id="text" type="text" placeholder="Digite sua dúvida sobre CNH..."  autocomplete="off"/>
-            <button id="send" type="submit">Enviar</button>
-        </form>
+    <div id="ibiaWidget" class="ibia-widget" aria-hidden="true" >
+        
+        <div class="app">
+            <header class="topbar">
+                <div class="title">IBIA</div>
+                <div class="subtitle">Sua Assistente Virtual de CNH</div>
+            </header>
+            <main id="messages" class="messages"></main>
+            <form id="chatForm" class="composer">
+                <input id="text" type="text" placeholder="Digite sua dúvida sobre CNH..."  autocomplete="off"/>
+                <button id="send" type="submit">Enviar</button>
+            </form>
+        </div>
     </div>
 
     <script src="./app.js"></script>
