@@ -28,13 +28,13 @@ Personalidade: Clara, empática e confiável
 
 Cores institucionais:
 
-Azul escuro — confiança e credibilidade
+Azul escuro
 
-Azul claro — inovação e proximidade
+Azul claro
 
-Verde — crescimento e aprendizado
+Verde
 
-Branco — clareza e transparência
+Branco 
 
 # Valores
 
@@ -44,7 +44,7 @@ Inovação: Utilizar tecnologia para aprimorar o processo educacional.
 
 Proximidade: Manter uma comunicação empática e orientada ao aluno.
 
-Compromisso: Reforçar os princípios institucionais do IBAP-RJ no ambiente digital.
+Compromisso: Reforçar os princípios dos materiais e auxiliar os alunos.
 
 # Objetivos
 
@@ -61,7 +61,6 @@ Desenvolvimento e Créditos Técnicos
 # Desenvolvimento: Alexssander Meirelles 
 # Concepção e Design da Marca: Izadora Paiva, Alexssander Meirelles
 # Arquitetura do Sistema: Alexssander Meirelles
-# Consultoria de IA e Interface: ..
 
 # Versão
 
@@ -74,4 +73,3 @@ IBAP-RJ – Instituto Brasileiro de Administração Pública do Rio de Janeiro
 Promovendo conhecimento, cidadania e inovação na formação profissional.
 Website: https://ibap-rj.org.br
 
-Plataforma EAD: https://ibap-rjead.vercel.app
