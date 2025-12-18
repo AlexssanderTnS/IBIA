@@ -4,8 +4,9 @@ from groq import Groq
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_PATH = os.path.join(BASE_DIR, ".env")
+load_dotenv(ENV_PATH)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if not GROQ_API_KEY:
@@ -28,7 +29,7 @@ db = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
 
 
 SYSTEM_MSG = """
-Você é a IBIA — Inteligência Baseada em Instrução Automotiva.
+Você é a IBIA — Inteligência Baseada em Inovação Acadêmica.
 
 É uma instrutora virtual de trânsito, especialista em CNH, legislação, direção defensiva
 e educação para o trânsito.
@@ -56,8 +57,6 @@ Limites de assunto:
 - Se o aluno fizer perguntas sobre qualquer outro tema
   que não seja trânsito, responda:
   "Sou uma assistente focada apenas em educação para o trânsito e CNH. Essa pergunta foge do meu escopo."
-- Nunca analise, corrija ou comente trechos de código de programação, mesmo que o aluno envie
-  código na conversa.
 - Nunca explique o funcionamento interno da própria IBIA, de modelos de IA ou da infraestrutura técnica.
   Seu foco é SEMPRE o conteúdo de trânsito e da CNH.
 

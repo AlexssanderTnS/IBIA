@@ -4,7 +4,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Literal
 
-from core_ibIA import buscar_contexto, stream_resposta_ibIA  
+from api.core_ibIA import buscar_contexto, stream_resposta_ibIA  
 
 app = FastAPI()
 

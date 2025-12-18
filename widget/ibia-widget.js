@@ -1,12 +1,10 @@
 (function () {
-
   const CONFIG = {
     apiUrl:
       (window.IBIA_CONFIG && window.IBIA_CONFIG.apiUrl) ||
       "http://127.0.0.1:8000/chat",
   };
 
- 
   function injectStyles() {
     const style = document.createElement("style");
     style.innerHTML = `
@@ -52,7 +50,7 @@
 
       .ibia-app {
         background: #111a2e;
-        border-radius: 14px;
+        border-radius: 10px;
         overflow: hidden;
         border: 1px solid rgba(255,255,255,.08);
         color: #e7eefc;
@@ -87,13 +85,15 @@
 
       .ibia-user {
         align-self: flex-end;
-        background: #1a73e8;
+        background: #0f93aaff;
         color: #fff;
+        border: 1px solid #ffffff2f
       }
 
       .ibia-assistant {
         align-self: flex-start;
-        background: rgba(255,255,255,.08);
+        background: rgba(20, 15, 71, 0.37);
+        border: 1px solid #ffffff2f
       }
 
       .ibia-composer {
@@ -122,11 +122,26 @@
         font-weight: 700;
         cursor: pointer;
       }
+    
+      .ibia-fab:hover .ibia-fab-icon {
+        transform: scale(1.05);
+        transition: transform 0.15s ease;
+      }
+
+      .ibia-widget.is-open {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+
+      .ibia-widget .app {
+        margin: 0;
+        max-width: 100%;
+      }
     `;
     document.head.appendChild(style);
   }
 
- 
   function injectUI() {
     const fab = document.createElement("button");
     fab.className = "ibia-fab";
@@ -220,7 +235,6 @@
     });
   }
 
- 
   injectStyles();
   const { fab, widget } = injectUI();
   initChat(fab, widget);
