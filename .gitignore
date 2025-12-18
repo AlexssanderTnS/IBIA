@@ -6,6 +6,21 @@ __pycache__/
 # C extensions
 *.so
 
+# venv / cache
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# artefatos pesados (não versionar)
+api/DB/
+DB/
+base/*.pdf
+base/**/*.pdf
+
+
+
+
 # Distribution / packaging
 .Python
 build/
