@@ -32,13 +32,16 @@ def raiz():
 def chat(req: RequisicaoChat):
     message = req.message
 
-    # Converte Mensagem (Pydantic) -> dict
     history = [{"role": m.role, "content": m.content} for m in req.history]
 
     contexto = buscar_contexto(message)
 
     def gen():
-        for parte in stream_resposta_ibIA(message, contexto, history):
+        for parte in stream_resposta_ibIA(
+            pergunta=message,
+            historico=history,
+            contexto=contexto,
+        ):
             yield parte
 
     return StreamingResponse(gen(), media_type="text/plain; charset=utf-8")

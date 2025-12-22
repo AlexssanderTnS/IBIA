@@ -12,3 +12,6 @@ sentence-transformers
 torch
 dotenv
 pypdf
+fastapi
+uvicorn
+pydantic

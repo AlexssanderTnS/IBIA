@@ -40,7 +40,7 @@ def vetorizar_chunks(chunks):
     db = Chroma.from_documents(
         chunks,
         embeddings,
-        persist_directory="DB"
+        persist_directory="./api/DB"
     )
 
     print("Banco de dados vetorial criado com sucesso!")
