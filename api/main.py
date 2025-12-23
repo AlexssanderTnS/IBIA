@@ -33,22 +33,37 @@ def health():
 
 @app.post("/chat")
 def chat(req: RequisicaoChat):
-    
-
     message = req.message
     history = [{"role": m.role, "content": m.content} for m in req.history]
 
-    contexto = buscar_contexto(message)
-
     def gen():
-        yield "Pensando...\n\n"   
+        
+        yield "IBIA: pensando...\n"
 
-    for parte in stream_resposta_ibIA(
-        pergunta=message,
-        historico=history,
-        contexto=contexto,
-    ):
-        yield parte
+       
+        from api.core_ibIA import buscar_contexto, stream_resposta_ibIA
 
+        try:
+            contexto = buscar_contexto(message)
+            yield "\n"  
 
-    return StreamingResponse(gen(), media_type="text/plain; charset=utf-8")
+            for parte in stream_resposta_ibIA(
+                pergunta=message,
+                historico=history,
+                contexto=contexto,
+            ):
+                
+                yield str(parte)
+
+        except Exception as e:
+           
+            yield f"\n[ERRO] {type(e).__name__}: {e}\n"
+
+    return StreamingResponse(
+        gen(),
+        media_type="text/plain; charset=utf-8",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",  
+        },
+    )
