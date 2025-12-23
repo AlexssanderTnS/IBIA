@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Literal
+from core_ibIA import buscar_contexto, stream_resposta_ibIA
 
 app = FastAPI()
 
@@ -32,8 +33,7 @@ def health():
 
 @app.post("/chat")
 def chat(req: RequisicaoChat):
-    # Import “pesado” só quando precisar
-    from api.core_ibIA import buscar_contexto, stream_resposta_ibIA
+    
 
     message = req.message
     history = [{"role": m.role, "content": m.content} for m in req.history]
@@ -41,11 +41,14 @@ def chat(req: RequisicaoChat):
     contexto = buscar_contexto(message)
 
     def gen():
-        for parte in stream_resposta_ibIA(
-            pergunta=message,
-            historico=history,
-            contexto=contexto,
-        ):
-            yield parte
+        yield "Pensando...\n\n"   
+
+    for parte in stream_resposta_ibIA(
+        pergunta=message,
+        historico=history,
+        contexto=contexto,
+    ):
+        yield parte
+
 
     return StreamingResponse(gen(), media_type="text/plain; charset=utf-8")
