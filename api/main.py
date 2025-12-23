@@ -4,8 +4,6 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Literal
 
-from api.core_ibIA import buscar_contexto, stream_resposta_ibIA  
-
 app = FastAPI()
 
 app.add_middleware(
@@ -28,10 +26,16 @@ class RequisicaoChat(BaseModel):
 def raiz():
     return {"mensagem": "API da IBIA está no ar!"}
 
+@app.get("/health")
+def health():
+    return {"ok": True}
+
 @app.post("/chat")
 def chat(req: RequisicaoChat):
-    message = req.message
+    # Import “pesado” só quando precisar
+    from api.core_ibIA import buscar_contexto, stream_resposta_ibIA
 
+    message = req.message
     history = [{"role": m.role, "content": m.content} for m in req.history]
 
     contexto = buscar_contexto(message)
